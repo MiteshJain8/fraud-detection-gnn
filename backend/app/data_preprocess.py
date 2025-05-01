@@ -16,7 +16,6 @@ def preprocess_beneficiary(file_in: str, file_out: str):
     """
     os.makedirs(os.path.dirname(file_out), exist_ok=True)
     df = pd.read_csv(file_in, dtype=str)
-    # columns available in both year files
     demographic_cols = [
         "DESYNPUF_ID",
         "BENE_BIRTH_DT",
@@ -57,7 +56,6 @@ def preprocess_beneficiary(file_in: str, file_out: str):
         "BENRES_CAR",
         "PPPYMT_CAR",
     ]
-    # select only columns present
     keep = [c for c in demographic_cols + chronic_flags + pay_fields if c in df.columns]
     df_out = df[keep].drop_duplicates(subset="DESYNPUF_ID")
     df_out.to_csv(file_out, index=False)
@@ -75,7 +73,7 @@ def preprocess_claims():
     df["CLM_THRU_DT"] = pd.to_datetime(df["CLM_THRU_DT"], format="%Y%m%d")
     df["CLM_ADMSN_DT"] = pd.to_datetime(df["CLM_ADMSN_DT"], format="%Y%m%d")
     df["NCH_BENE_DSCHRG_DT"] = pd.to_datetime(df["NCH_BENE_DSCHRG_DT"], format="%Y%m%d")
-    # core columns
+
     core = [
         "DESYNPUF_ID",
         "CLM_ID",

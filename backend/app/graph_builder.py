@@ -32,17 +32,13 @@ def build_graph():
     except FileNotFoundError as e:
         print(f"Error loading processed files: {e} Run data_preprocess.py first.")
         return
-
-    # Merge beneficiaries and dedupe
     beneficiaries = pd.concat([ben8, ben10], ignore_index=True)
     beneficiaries.drop_duplicates(subset="DESYNPUF_ID", inplace=True)
 
-    # Initialize graph and mapping
     G = nx.Graph()
     node_mapping = {}
     current_idx = 0
 
-    # Define feature columns
     demogs = [
     "BENE_SEX_IDENT_CD",
     "BENE_RACE_CD",
@@ -68,13 +64,11 @@ def build_graph():
     # Preallocate feature array
     node_features = np.zeros((total_nodes, feature_dim), dtype=float)
 
-    # Add beneficiary nodes & features
     for i, row in beneficiaries.iterrows():
         pid = row["DESYNPUF_ID"]
         node_mapping[pid] = current_idx
         G.add_node(current_idx, node_type="beneficiary")
 
-        # Align one-hot for this row
         vec = ben_dummies.iloc[i].values
         node_features[current_idx, :-1] = vec
         # beneficiary indicator = 0
@@ -82,7 +76,6 @@ def build_graph():
 
         current_idx += 1
 
-    # Add provider nodes & features
     for pid in provider_ids:
         prov_key = str(pid)
         node_mapping[prov_key] = current_idx
@@ -91,7 +84,6 @@ def build_graph():
         node_features[current_idx, -1] = 1
         current_idx += 1
 
-    # Build edges and collect attributes
     edges = []
     amounts = []
     for _, r in claims.iterrows():
@@ -107,14 +99,11 @@ def build_graph():
         amounts.append(float(r.get("CLM_PMT_AMT", 0)))
         G.add_edge(u, v)
 
-    # Convert to PyG Data
     edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
     x = torch.tensor(node_features, dtype=torch.float)
     data = Data(x=x, edge_index=edge_index)
-    # Optional: add edge_attr
     # data.edge_attr = torch.tensor(amounts, dtype=torch.float).unsqueeze(1)
 
-    # Save artifacts
     torch.save(data, GRAPH_PT)
     with open(NODE_MAP_JSON, 'w') as f:
         json.dump(node_mapping, f)

@@ -13,5 +13,5 @@ BENEF_2008_PROC = os.path.join(PROCESSED_DIR, 'beneficiary_2008.csv')
 BENEF_2010_PROC = os.path.join(PROCESSED_DIR, 'beneficiary_2010.csv')
 CLAIMS_PROC     = os.path.join(PROCESSED_DIR, 'claims_processed.csv')
 GRAPH_PT        = os.path.join(PROCESSED_DIR, 'claim_graph_data.pt')
-NODE_MAP_JSON   = os.path.join(PROCESSED_DIR, 'node_mapping.json') # Added
-MODEL_SAVE_PATH = os.path.join(MODEL_DIR, 'gae_model.pt') # Added
+NODE_MAP_JSON   = os.path.join(PROCESSED_DIR, 'node_mapping.json')
+MODEL_SAVE_PATH = os.path.join(MODEL_DIR, 'gae_model.pt')
