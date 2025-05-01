@@ -38,11 +38,6 @@ function App() {
   )
 }
 
-// Add custom animation if needed in tailwind.config.js
-// extend: {
-//   animation: {
-//     'spin-slow': 'spin 20s linear infinite',
-//   }
-// }
+// (Removed commented-out custom animation code)
 
 export default App
