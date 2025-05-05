@@ -15,5 +15,9 @@ CLAIMS_PROC     = os.path.join(PROCESSED_DIR, 'claims_processed.csv')
 GRAPH_PT        = os.path.join(PROCESSED_DIR, 'claim_graph_data.pt')
 NODE_MAPPING_PATH   = os.path.join(PROCESSED_DIR, 'node_mapping.json')
 MODEL_SAVE_PATH = os.path.join(MODEL_DIR, 'gae_model.pt')
-EMBEDDING_DIM = 32
-NODE_MAPPING_PKL = "node_mapping.pkl"
+PLOT_PATH = os.path.join(MODEL_DIR, 'training_curve.png')
+
+EMBEDDING_DIM = 128  # Dimension of the node embeddings
+EPOCHS = 200
+LEARNING_RATE = 0.01
+PATIENCE = 10  # Early stopping patience
