@@ -10,7 +10,7 @@ from config import (
     BENEF_2010_PROC,
     CLAIMS_PROC,
     GRAPH_PT,
-    NODE_MAP_JSON,
+    NODE_MAPPING_PATH,
 )
 
 
@@ -22,7 +22,7 @@ def build_graph():
     """
     # Ensure output dirs
     os.makedirs(os.path.dirname(GRAPH_PT), exist_ok=True)
-    os.makedirs(os.path.dirname(NODE_MAP_JSON), exist_ok=True)
+    os.makedirs(os.path.dirname(NODE_MAPPING_PATH), exist_ok=True)
 
     # Load preprocessed data
     try:
@@ -105,11 +105,11 @@ def build_graph():
     # data.edge_attr = torch.tensor(amounts, dtype=torch.float).unsqueeze(1)
 
     torch.save(data, GRAPH_PT)
-    with open(NODE_MAP_JSON, 'w') as f:
+    with open(NODE_MAPPING_PATH, 'w') as f:
         json.dump(node_mapping, f)
 
     print(f"Saved graph: {data.num_nodes} nodes, {data.num_edges} edges.")
-    print(f"Node mapping at: {NODE_MAP_JSON}")
+    print(f"Node mapping at: {NODE_MAPPING_PATH}")
 
 
 if __name__ == "__main__":
