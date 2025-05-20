@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    environment:
+      - MODEL_PATH=/app/models/gnn_model.pt
+      - GRAPH_DATA_PATH=/app/data/processed/graph_data.pt
+
+  frontend:
+    build: ./front_end
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    environment:
+      - API_BASE_URL=http://backend:8000
+
+networks:
+  default:
+    name: fraud-detection-network
