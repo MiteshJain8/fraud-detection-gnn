@@ -60,6 +60,8 @@ python -m venv .venv
 source .venv/bin/activate
 # Windows Command Prompt:
 # .\venv\Scripts\activate.bat
+# or you can try this if the above command doesn't work
+# .\\.venv\Scripts\activate
 # Windows PowerShell:
 # .\venv\Scripts\Activate.ps1
 ```
