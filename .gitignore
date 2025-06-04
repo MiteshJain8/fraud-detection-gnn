@@ -173,8 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
-# by harsh
-/backend/bin
-/backend/lib64
-/backend/pyvenv.cfg
+models/*
+data/raw/*

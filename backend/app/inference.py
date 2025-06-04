@@ -1,6 +1,47 @@
 import torch
 from torch_geometric.utils import k_hop_subgraph
 from torch.nn.functional import sigmoid
+import pandas as pd
+
+def compute_temp_embedding(claim_dict, z, data, model, edge_index):
+    """
+    Build temporary feature vector for new claim, connect to existing provider,
+    and return the encoded node embedding.
+    """
+    # Extract components
+    sex = claim_dict["bene_sex_ident_cd"]
+    race = claim_dict["bene_race_cd"]
+    esrd = claim_dict["bene_esrd_ind"]
+    state = claim_dict["sp_state_code"]
+    county = claim_dict["bene_county_cd"]
+    conditions = claim_dict["sp_conditions"]
+    payments = claim_dict["payments"]
+    provider_id = claim_dict["provider_id"]
+
+    # Build dummy DataFrame for one-hot
+    df_demo = pd.DataFrame([{
+        "BENE_SEX_IDENT_CD": sex,
+        "BENE_RACE_CD": race,
+        "BENE_ESRD_IND": esrd,
+        "SP_STATE_CODE": state,
+        "BENE_COUNTY_CD": county
+    }])
+
+    demo_onehot = pd.get_dummies(df_demo, columns=df_demo.columns)
+    demo_onehot = demo_onehot.reindex(columns=data.x.shape[1]-1, fill_value=0)
+
+    # Prepare chronic + payment features
+    chronic_vals = torch.tensor([conditions[k] for k in sorted(conditions)], dtype=torch.float)
+    payment_vals = torch.tensor([payments[k] for k in sorted(payments)], dtype=torch.float)
+    payment_vals = (payment_vals - payment_vals.mean()) / (payment_vals.std() + 1e-6)
+
+    node_feat = torch.cat([torch.tensor(demo_onehot.values, dtype=torch.float).squeeze(), chronic_vals, payment_vals, torch.tensor([0.])])  # 0 = beneficiary
+
+    node_feat = node_feat.to(data.x.device)
+
+    # Manually run through encoder
+    return model.encoder(node_feat.unsqueeze(0), edge_index)
+
 
 def get_fraud_score(claim_id: str, data, z, node_mapping: dict, num_hops: int = 5, topk: int = 1):
     """

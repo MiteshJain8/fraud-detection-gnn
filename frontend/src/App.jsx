@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import Dashboard from '../components/Dashboard';
+import ClaimForm from './components/ClaimForm'
+import AnomalyTable from './components/AnomalyTable'
 
-export default function App() {
-  const [anomalies, setAnomalies] = useState([]);
+function App() {
+  return (
+    <div className="min-h-screen bg-gray-100 p-6 font-sans">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-center text-blue-800">
+          Insurance Claim Fraud Detection
+        </h1>
+        <p className="text-center text-sm text-gray-600">
+          Submit new claims to assess fraud risk in real-time.
+        </p>
+      </header>
 
-  useEffect(() => {
-    axios.get('http://localhost:8000/anomalies')
-      .then(res => {
-        if (res.data && Array.isArray(res.data.anomalies)) {
-          setAnomalies(res.data.anomalies);
-        } else {
-          console.error("Invalid data format received:", res.data);
-          setAnomalies([]); // Set to empty array on error or invalid format
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching anomalies:", error);
-        setAnomalies([]);
-      });
-  }, []);
-  return <Dashboard anomalies={anomalies} />;
+      <main className="max-w-5xl mx-auto">
+        <ClaimForm />
+        <AnomalyTable />
+      </main>
+
+      <footer className="mt-10 text-center text-xs text-gray-500">
+        Built with React + Tailwind · Powered by GNN Backend
+      </footer>
+    </div>
+  )
 }
+
+export default App
