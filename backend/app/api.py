@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import torch
 from model import GCNEncoder, FraudGAE
 from config import MODEL_SAVE_PATH, EMBEDDING_DIM
-from utils import load_graph, load_node_mapping
+from utils import load_graph, load_node_mapping, load_model
 from inference import get_fraud_score, compute_temp_embedding
 from anomaly import top_anomalies, isolate_anomalies, z_score_anomaly_scores
 
@@ -19,37 +19,38 @@ class NewClaim(BaseModel):
     payments: dict        # e.g., {"MEDREIMB_IP": 2000, ...}
     provider_id: str      # Existing provider ID
 
+
 @router.post("/submit_claim")
 def submit_claim(claim: NewClaim):
-    data = load_graph()
-    encoder = GCNEncoder(data.num_node_features, EMBEDDING_DIM)
-    model = FraudGAE(encoder)
-    model.load_state_dict(torch.load(MODEL_SAVE_PATH))
-    model.eval()
+    try:
+        data = load_graph()
+        node_map = load_node_mapping()
+        encoder = GCNEncoder(data.num_node_features, EMBEDDING_DIM)
+        model = FraudGAE(encoder)
+        model.load_state_dict(torch.load(MODEL_SAVE_PATH))
+        model.eval()
 
-    with torch.no_grad():
-        z = model.encode(data.x, data.edge_index)
-        z_new = compute_temp_embedding(
-            claim.dict(), z, data, model, data.edge_index
-        )
+        # Compute new node embedding with context injection
+        with torch.no_grad():
+            fraud_score, top_neighbors, z_new = compute_temp_embedding(
+                data=data,
+                model=model,
+                claim=claim.model_dump(),
+                node_mapping=node_map
+            )
 
-        # Compute similarity with all existing nodes
-        scores = torch.sigmoid(torch.matmul(z, z_new))
-        fraud_score = scores.mean().item()
-
-        # Anomaly score
-        z_scores = z_score_anomaly_scores(torch.cat([z, z_new.unsqueeze(0)], dim=0))
-        anomaly = z_scores[-1].item()
-
-        # Top-5 similar nodes
-        top_vals, top_indices = torch.topk(scores.squeeze(), k=5)
-        top_neighbors = [{"node_index": int(i), "score": float(s)} for i, s in zip(top_indices, top_vals)]
+            # Compute anomaly score from z
+            z_all = torch.cat([model.encode(data.x, data.edge_index), z_new.unsqueeze(0)], dim=0)
+            anomaly_scores = z_score_anomaly_scores(z_all)
+            anomaly = anomaly_scores[-1].item()
 
         return {
             "fraud_score": round(fraud_score, 4),
             "anomaly_score": round(anomaly, 4),
-            "top_neighbors": top_neighbors,
+            "top_neighbors": top_neighbors
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 class PredictionRequest(BaseModel):
     claim_id: str

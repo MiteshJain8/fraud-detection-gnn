@@ -11,6 +11,7 @@ from config import (
     CLAIMS_PROC,
     GRAPH_PT,
     NODE_MAPPING_PATH,
+    PROCESSED_DIR
 )
 
 def build_graph():
@@ -131,6 +132,8 @@ def build_graph():
 
     print(f"Saved graph: {data.num_nodes} nodes, {data.num_edges} edges.")
     print(f"Node mapping at: {NODE_MAPPING_PATH}")
+    with open(os.path.join(PROCESSED_DIR, 'feature_columns.json'), 'w') as f:
+        json.dump(list(ben_dummies.columns), f)
 
 if __name__ == "__main__":
     build_graph()
