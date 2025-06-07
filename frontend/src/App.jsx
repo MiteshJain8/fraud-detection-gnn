@@ -1,5 +1,4 @@
 import ClaimForm from './components/ClaimForm'
-import AnomalyTable from './components/AnomalyTable'
 
 function App() {
   return (

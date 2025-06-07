@@ -1,7 +1,10 @@
-fastapi
-uvicorn[standard]
-pandas
 torch
 torch-geometric
-networkx
+matplotlib
+scikit-learn
 numpy
+pandas
+fastapi
+uvicorn[standard]
+pydantic
+networkx

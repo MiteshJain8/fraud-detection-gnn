@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import torch
 from model import GCNEncoder, FraudGAE
 from config import MODEL_SAVE_PATH, EMBEDDING_DIM
-from utils import load_graph, load_node_mapping, load_model
+from utils import load_graph, load_node_mapping
 from inference import get_fraud_score, compute_temp_embedding
 from anomaly import top_anomalies, isolate_anomalies, z_score_anomaly_scores
 

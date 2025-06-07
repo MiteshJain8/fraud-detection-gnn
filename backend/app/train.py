@@ -1,12 +1,11 @@
 import os
 import torch
-import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torch.optim import Adam
 from torch_geometric.utils import negative_sampling
 from model import GCNEncoder, FraudGAE
 from config import GRAPH_PT, MODEL_SAVE_PATH, MODEL_DIR, EMBEDDING_DIM, EPOCHS, LEARNING_RATE, PATIENCE
-from sklearn.metrics import roc_auc_score, precision_score
+from sklearn.metrics import roc_auc_score
 
 # Set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
