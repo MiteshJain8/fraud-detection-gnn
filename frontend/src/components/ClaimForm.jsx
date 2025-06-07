@@ -1,147 +1,126 @@
-import { useState } from 'react'
-import RiskResult from './RiskResult'
+import { useRef, useState } from 'react';
+import RiskResult from './RiskResult';
 
-const defaultConditions = {
-  SP_ALZHDMTA: 0, SP_CHF: 0, SP_CHRNKIDN: 0, SP_CNCR: 0, SP_COPD: 0,
-  SP_DEPRESSN: 0, SP_DIABETES: 0, SP_ISCHMCHT: 0, SP_OSTEOPRS: 0,
-  SP_RA_OA: 0, SP_STRKETIA: 0,
-}
+const chronicLabels = {
+    SP_ALZHDMTA: "Alzheimer's Disease/Dementia",
+    SP_CHF: "Congestive Heart Failure",
+    SP_CHRNKIDN: "Chronic Kidney Disease",
+    SP_CNCR: "Cancer",
+    SP_COPD: "Chronic Obstructive Pulmonary Disease",
+    SP_DEPRESSN: "Depression",
+    SP_DIABETES: "Diabetes",
+    SP_ISCHMCHT: "Ischemic Heart Disease",
+    SP_OSTEOPRS: "Osteoporosis",
+    SP_RA_OA: "Rheumatoid/Osteoarthritis",
+    SP_STRKETIA: "Stroke or Transient Ischemic Attack",
+};
 
-const defaultPayments = {
-  MEDREIMB_IP: 0, BENRES_IP: 0, PPPYMT_IP: 0,
-  MEDREIMB_OP: 0, BENRES_OP: 0, PPPYMT_OP: 0,
-  MEDREIMB_CAR: 0, BENRES_CAR: 0, PPPYMT_CAR: 0,
-}
+const paymentLabels = {
+    MEDREIMB_IP: "Inpatient Medicare Reimbursement",
+    BENRES_IP: "Inpatient Beneficiary Responsibility",
+    PPPYMT_IP: "Inpatient Primary Payer",
+    MEDREIMB_OP: "Outpatient Medicare Reimbursement",
+    BENRES_OP: "Outpatient Beneficiary Responsibility",
+    PPPYMT_OP: "Outpatient Primary Payer",
+    MEDREIMB_CAR: "Carrier Medicare Reimbursement",
+    BENRES_CAR: "Carrier Beneficiary Responsibility",
+    PPPYMT_CAR: "Carrier Primary Payer",
+};
 
 export default function ClaimForm() {
-  const [form, setForm] = useState({
-    bene_sex_ident_cd: 1,
-    bene_race_cd: 1,
-    bene_esrd_ind: 0,
-    sp_state_code: 1,
-    bene_county_cd: 1,
-    sp_conditions: defaultConditions,
-    payments: defaultPayments,
-    provider_id: '',
-  })
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
+    // Create refs
+    const refs = useRef({});
 
-  const handleChange = (e, group = null) => {
-    const { name, value } = e.target
-    if (group) {
-      setForm(prev => ({
-        ...prev,
-        [group]: { ...prev[group], [name]: Number(value) },
-      }))
-    } else {
-      setForm(prev => ({ ...prev, [name]: name === 'provider_id' ? value : Number(value) }))
-    }
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError(null)
-    try {
-      const res = await fetch('http://localhost:8000/submit_claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      if (!res.ok) throw new Error('Claim submission failed.')
-      const data = await res.json()
-      setResult(data)
-    } catch (err) {
-      setError(err.message)
-    }
-  }
-
-  return (
-    <div className="max-w-4xl mx-auto text-lg">
-      <h2 className="text-2xl font-bold mb-6 text-blue-700">📝 Submit a New Insurance Claim</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg">
-
-        {/* Basic Info */}
-        <div>
-          <h3 className="text-xl font-semibold mb-3 text-gray-800">Beneficiary & Provider Info</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-medium mb-1">Provider ID</label>
-              <input name="provider_id" required placeholder="e.g. 123456" value={form.provider_id}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Sex (1 = Male, 2 = Female)</label>
-              <input name="bene_sex_ident_cd" type="number" value={form.bene_sex_ident_cd}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Race Code</label>
-              <input name="bene_race_cd" type="number" value={form.bene_race_cd}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">ESRD (End-Stage Renal Disease) Indicator</label>
-              <input name="bene_esrd_ind" type="number" value={form.bene_esrd_ind}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">State Code</label>
-              <input name="sp_state_code" type="number" value={form.sp_state_code}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">County Code</label>
-              <input name="bene_county_cd" type="number" value={form.bene_county_cd}
-                onChange={handleChange} className="w-full border p-2 rounded" />
-            </div>
-          </div>
+    // Utility to render Input
+    const InputField = ({ label, name, defaultValue = "0" }) => (
+        <div className="mb-4">
+            <label className="block font-medium text-gray-800 mb-1">{label}</label>
+            <input
+                type={name === "provider_id" ? "text" : "number"}
+                name={name}
+                defaultValue={defaultValue}
+                ref={el => (refs.current[name] = el)}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+            />
         </div>
+    );
 
-        {/* Chronic Conditions */}
-        <div>
-          <h3 className="text-xl font-semibold mb-3 text-gray-800">Chronic Conditions</h3>
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3 text-sm">
-            {Object.keys(defaultConditions).map((key) => (
-              <div key={key}>
-                <label className="block text-gray-600 mb-1">{key.replace("SP_", "").replace("_", " ")}</label>
-                <input type="number" min="0" max="1" name={key}
-                  value={form.sp_conditions[key]}
-                  onChange={(e) => handleChange(e, 'sp_conditions')}
-                  className="w-full border p-1 rounded" />
-              </div>
-            ))}
-          </div>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setResult(null);
+
+        try {
+            const payload = {
+                provider_id: refs.current["provider_id"].value,
+                bene_sex_ident_cd: Number(refs.current["bene_sex_ident_cd"].value),
+                bene_race_cd: Number(refs.current["bene_race_cd"].value),
+                bene_esrd_ind: Number(refs.current["bene_esrd_ind"].value),
+                sp_state_code: Number(refs.current["sp_state_code"].value),
+                bene_county_cd: Number(refs.current["bene_county_cd"].value),
+                sp_conditions: Object.fromEntries(
+                    Object.keys(chronicLabels).map(k => [k, Number(refs.current[k].value)])
+                ),
+                payments: Object.fromEntries(
+                    Object.keys(paymentLabels).map(k => [k, Number(refs.current[k].value)])
+                )
+            };
+
+            const res = await fetch("http://localhost:8000/submit_claim", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) throw new Error("Claim submission failed.");
+            const data = await res.json();
+            setResult(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md">
+            <h2 className="text-2xl font-bold mb-6 text-blue-700">📝 Submit Insurance Claim</h2>
+            <form onSubmit={handleSubmit}>
+                <InputField name="provider_id" label="Provider ID" defaultValue="4900NA" />
+                <InputField name="bene_sex_ident_cd" label="Sex (1 = Male, 2 = Female)" defaultValue="1" />
+                <InputField name="bene_race_cd" label="Race Code" defaultValue="1" />
+                <InputField name="bene_esrd_ind" label="ESRD Indicator (0 = No, 1 = Yes)" defaultValue="0" />
+                <InputField name="sp_state_code" label="State Code" defaultValue="1" />
+                <InputField name="bene_county_cd" label="County Code" defaultValue="1" />
+
+                <hr className="my-6" />
+                <h3 className="text-lg font-semibold mb-3">Chronic Conditions</h3>
+                {Object.entries(chronicLabels).map(([key, label]) => (
+                    <InputField key={key} name={key} label={label} defaultValue="0" />
+                ))}
+
+                <hr className="my-6" />
+                <h3 className="text-lg font-semibold mb-3">Payments & Reimbursements (USD)</h3>
+                {Object.entries(paymentLabels).map(([key, label]) => (
+                    <InputField key={key} name={key} label={label} defaultValue="0" />
+                ))}
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded text-lg mt-6"
+                >
+                    {loading ? "⏳ Analyzing..." : "🚀 Submit Claim for Analysis"}
+                </button>
+            </form>
+
+            {error && <p className="text-red-600 mt-4 font-medium">{error}</p>}
+            {result && <RiskResult result={result} />}
         </div>
-
-        {/* Payment Info */}
-        <div>
-          <h3 className="text-xl font-semibold mb-3 text-gray-800">Payment & Reimbursement</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-            {Object.keys(defaultPayments).map((key) => (
-              <div key={key}>
-                <label className="block text-gray-600 mb-1">{key.replace("_", " ")}</label>
-                <input type="number" name={key} value={form.payments[key]} onChange={(e) => handleChange(e, 'payments')} className="w-full border p-1 rounded" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <button type="submit"
-                className="bg-blue-700 text-white text-lg px-6 py-2 rounded hover:bg-blue-800">
-          🚀 Submit Claim for Analysis
-        </button>
-      </form>
-
-      {error && <p className="text-red-600 mt-3 font-medium">{error}</p>}
-      {result && <RiskResult result={result} />}
-    </div>
-  )
+    );
 }
