@@ -1,0 +1,98 @@
+[
+    {
+        "provider_id": "4500HB",
+        "bene_sex_ident_cd": 1,
+        "bene_race_cd": 1,
+        "bene_esrd_ind": 0,
+        "sp_state_code": 14,
+        "bene_county_cd": 800,
+        "sp_conditions": {
+            "SP_ALZHDMTA": 1,
+            "SP_CHF": 1,
+            "SP_CHRNKIDN": 1,
+            "SP_CNCR": 2,
+            "SP_COPD": 2,
+            "SP_DEPRESSN": 1,
+            "SP_DIABETES": 2,
+            "SP_ISCHMCHT": 1,
+            "SP_OSTEOPRS": 2,
+            "SP_RA_OA": 2,
+            "SP_STRKETIA": 2
+        },
+        "payments": {
+            "MEDREIMB_IP": 15000.0,
+            "BENRES_IP": 2048.0,
+            "PPPYMT_IP": 0.0,
+            "MEDREIMB_OP": 0.0,
+            "BENRES_OP": 0.0,
+            "PPPYMT_OP": 0.0,
+            "MEDREIMB_CAR": 1430.0,
+            "BENRES_CAR": 450.0,
+            "PPPYMT_CAR": 0.0
+        }
+    },
+    {
+        "provider_id": "2200PP",
+        "bene_sex_ident_cd": 2,
+        "bene_race_cd": 1,
+        "bene_esrd_ind": 0,
+        "sp_state_code": 22,
+        "bene_county_cd": 90,
+        "sp_conditions": {
+            "SP_ALZHDMTA": 1,
+            "SP_CHF": 2,
+            "SP_CHRNKIDN": 2,
+            "SP_CNCR": 2,
+            "SP_COPD": 1,
+            "SP_DEPRESSN": 1,
+            "SP_DIABETES": 2,
+            "SP_ISCHMCHT": 1,
+            "SP_OSTEOPRS": 2,
+            "SP_RA_OA": 2,
+            "SP_STRKETIA": 2
+        },
+        "payments": {
+            "MEDREIMB_IP": 18000.0,
+            "BENRES_IP": 3072.0,
+            "PPPYMT_IP": 0.0,
+            "MEDREIMB_OP": 0.0,
+            "BENRES_OP": 0.0,
+            "PPPYMT_OP": 0.0,
+            "MEDREIMB_CAR": 2280.0,
+            "BENRES_CAR": 560.0,
+            "PPPYMT_CAR": 0.0
+        }
+    },
+    {
+        "provider_id": "4900NA",
+        "bene_sex_ident_cd": 2,
+        "bene_race_cd": 2,
+        "bene_esrd_ind": 0,
+        "sp_state_code": 49,
+        "bene_county_cd": 60,
+        "sp_conditions": {
+            "SP_ALZHDMTA": 1,
+            "SP_CHF": 1,
+            "SP_CHRNKIDN": 1,
+            "SP_CNCR": 1,
+            "SP_COPD": 1,
+            "SP_DEPRESSN": 1,
+            "SP_DIABETES": 1,
+            "SP_ISCHMCHT": 1,
+            "SP_OSTEOPRS": 1,
+            "SP_RA_OA": 2,
+            "SP_STRKETIA": 1
+        },
+        "payments": {
+            "MEDREIMB_IP": 28200.0,
+            "BENRES_IP": 5620.0,
+            "PPPYMT_IP": 0.0,
+            "MEDREIMB_OP": 6870.0,
+            "BENRES_OP": 1560.0,
+            "PPPYMT_OP": 0.0,
+            "MEDREIMB_CAR": 6890.0,
+            "BENRES_CAR": 1950.0,
+            "PPPYMT_CAR": 0.0
+        }
+    }
+]

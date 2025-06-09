@@ -17,7 +17,7 @@ NODE_MAPPING_PATH   = os.path.join(PROCESSED_DIR, 'node_mapping.json')
 MODEL_SAVE_PATH = os.path.join(MODEL_DIR, 'gae_model.pt')
 PLOT_PATH = os.path.join(MODEL_DIR, 'training_curve.png')
 
-EMBEDDING_DIM = 128  # Dimension of the node embeddings
+EMBEDDING_DIM = 64  # Dimension of the node embeddings
 EPOCHS = 200
 LEARNING_RATE = 0.01
 PATIENCE = 10  # Early stopping patience

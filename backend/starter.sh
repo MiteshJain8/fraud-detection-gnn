@@ -7,7 +7,7 @@ if [ ! -d ".venv" ]; then
 fi
 
 # Activate virtual environment
-# Use source for Linux/macOS, .\venv\Scripts\activate for Windows Git Bash/PowerShell
+# Use source for Linux/macOS, .\venv\Scripts\Activate for Windows Git Bash/PowerShell
 # This script assumes a Unix-like environment (Linux, macOS, Git Bash on Windows)
 source .venv/bin/activate || . .venv/Scripts/activate || echo "Failed to activate virtual environment. Please activate manually."
 

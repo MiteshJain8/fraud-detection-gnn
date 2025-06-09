@@ -4,27 +4,36 @@
         ├── backend/                         # Backend service (FastAPI + GNN)
         │   ├── app/
         │   │   ├── __init__.py
+        │   │   ├── api.py
+        │   │   ├── anomaly.py
         │   │   ├── config.py                # Paths and hyperparameters
-        │   │   ├── main.py                  # FastAPI server
         │   │   ├── data_preprocess.py       # Preprocessing for 2008 & 2010
         │   │   ├── graph_builder.py         # Build PyG graph
+        │   │   ├── inference.py
+        │   │   ├── main.py                  # FastAPI server
         │   │   ├── model.py                 # GNN definition
         │   │   ├── train.py                 # Training loop
         │   │   └── utils.py                 # Helper functions
         │   ├── requirements.txt             # Backend dependencies
         │   └── starter.sh                   # Activate env & run server
         │
-        ├── frontend/                        # React.js dashboard
+        ├── frontend/                        # React.js
         │   ├── package.json
+        │   ├── package-lock.json
+        │   ├── .gitignore
+        │   ├── eslint.config.js
         │   ├── vite.config.js               # Vite setup
+        │   ├── tailwind.config.js           # tailwind setup
         │   ├── public/
-        │   │   └── index.html
+        │   │   ├── image.png
+        │   │   └── vite.svg
         │   └── src/
         │       ├── App.jsx
+        │       ├── index.css
         │       ├── main.jsx
         │       └── components/
-        │           ├── Dashboard.jsx
-        │           └── ClaimTable.jsx
+        │           ├── ClaimForm.jsx
+        │           └── RiskResult.jsx
         │
         ├── data/
         │   ├── raw/
@@ -37,8 +46,8 @@
         │       └── claims_processed.csv
         │
         ├── models/                          # Saved model checkpoints
-        ├── notebooks/                       # EDA notebooks
-        ├── reports/                         # Figures and logs
+        ├── .gitignore
+        ├── LICENSE
         └── README.md                        # Project overview and run instructions
 
 ## Running the Full Stack
@@ -59,9 +68,7 @@ python -m venv .venv
 # Linux/macOS/Git Bash:
 source .venv/bin/activate
 # Windows Command Prompt:
-# .\venv\Scripts\activate.bat
-# or you can try this if the above command doesn't work
-# .\\.venv\Scripts\activate
+# .\venv\Scripts\Activate
 # Windows PowerShell:
 # .\venv\Scripts\Activate.ps1
 ```
@@ -83,10 +90,11 @@ python app/graph_builder.py
 
 Start the backend server using the starter script:
 ```bash
-# This script activates the environment, installs dependencies (if needed), and runs the server
+# This script creates and activates the environment, installs dependencies (if needed), and runs the server (This script assumes a Unix-like environment (Linux, macOS, Git Bash on Windows))
 sh starter.sh
 # Or run uvicorn directly after activating the environment:
-# uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# cd app
+# uvicorn main:app --reload
 ```
 The backend server will be running at `http://localhost:8000`.
 
@@ -102,11 +110,16 @@ Install Node.js dependencies:
 npm install
 ```
 
+Install tailwindcss for vite:
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
 Start the frontend development server:
 ```bash
 npm run dev
 ```
-The frontend application will be accessible at `http://localhost:3000` (or another port if 3000 is busy). The dashboard will fetch data from the backend API.
+The frontend application will be accessible at `http://localhost:5173`. The dashboard will fetch data from the backend API.
 
 ---
 *Make sure both the backend and frontend servers are running simultaneously to use the application.*
